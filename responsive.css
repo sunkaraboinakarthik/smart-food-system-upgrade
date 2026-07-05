@@ -1,0 +1,59 @@
+/* ===== SMARTFOOD - RESPONSIVE STYLES ===== */
+
+/* Large Desktop */
+@media (max-width: 1280px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero { padding: 60px 5%; }
+  .hero h1 { font-size: 2.4rem; }
+  .hero-image { justify-content: flex-start; }
+  .hero-food-card { max-width: 260px; }
+  .auth-page { grid-template-columns: 1fr; }
+  .auth-left { display: none; }
+  .cart-layout, .payment-layout, .track-layout { grid-template-columns: 1fr; }
+  .order-summary { position: static; }
+  .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .dashboard-layout { grid-template-columns: 220px 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .navbar-inner { gap: 12px; }
+  .nav-search { display: none; }
+  .logo-text { font-size: 1.2rem; }
+  .hero h1 { font-size: 1.9rem; }
+  .hero-search { flex-direction: column; border-radius: 12px; }
+  .location-select { border-right: none; border-bottom: 1px solid var(--border); padding: 12px 16px; width: 100%; }
+  .hero-stats { gap: 16px; }
+  .stat-num { font-size: 1.2rem; }
+  .restaurants-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .food-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .section { padding: 40px 4%; }
+  .footer-inner { grid-template-columns: 1fr; }
+  .dashboard-layout { grid-template-columns: 1fr; }
+  .sidebar { position: relative; height: auto; }
+  .dashboard-main { padding: 20px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .page-container { margin: 20px auto; }
+  .page-title { font-size: 1.5rem; }
+  .data-table { font-size: 0.8rem; }
+  .data-table th, .data-table td { padding: 10px 12px; }
+  .nav-btn span { display: none; }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .hero h1 { font-size: 1.6rem; }
+  .restaurants-grid { grid-template-columns: 1fr; }
+  .food-grid { grid-template-columns: 1fr 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .cart-item { flex-wrap: wrap; gap: 12px; }
+  .section-title { font-size: 1.4rem; }
+  .hero-stats { flex-wrap: wrap; }
+  .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+}

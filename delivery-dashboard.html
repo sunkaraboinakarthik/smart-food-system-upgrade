@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery Dashboard – SmartFood</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">🍔</div>
+        <span class="logo-text">Smart<span>Food</span></span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-label">Agent Panel</div>
+      <a href="#" class="sidebar-link active"><i class="fas fa-motorcycle"></i> My Deliveries</a>
+      <a href="#" class="sidebar-link"><i class="fas fa-history"></i> History</a>
+      <a href="#" class="sidebar-link"><i class="fas fa-chart-bar"></i> Earnings</a>
+      <div class="sidebar-label">System</div>
+      <a href="admin-dashboard.html" class="sidebar-link"><i class="fas fa-user-shield"></i> Admin Panel</a>
+      <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> View Site</a>
+      <a href="#" class="sidebar-link" onclick="AUTH.logout()" style="color:rgba(255,100,100,0.7);"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+
+    <!-- Agent Status Toggle -->
+    <div style="padding:16px;border-top:1px solid rgba(255,255,255,0.1);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span style="color:rgba(255,255,255,0.7);font-size:0.85rem;font-weight:700;">Status</span>
+        <div id="agentStatusBadge" style="background:var(--accent);color:white;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:800;">🟢 Online</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:1.1rem;">🚴</div>
+        <div><div style="color:white;font-weight:700;font-size:0.88rem;" id="agentName">Agent</div><div style="color:rgba(255,255,255,0.4);font-size:0.75rem;">Delivery Agent</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dashboard-main">
+    <div class="dashboard-header">
+      <div>
+        <h1>My Deliveries</h1>
+        <p style="color:var(--text-light);font-size:0.9rem;margin-top:4px;">Manage and update your assigned orders</p>
+      </div>
+      <button class="nav-btn btn-primary" onclick="refreshDashboard()"><i class="fas fa-sync"></i> Refresh</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-box"></i></div>
+        <div class="stat-info"><div class="num" id="assignedCount">0</div><div class="label">Assigned</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange"><i class="fas fa-spinner fa-spin"></i></div>
+        <div class="stat-info"><div class="num" id="pendingCount">0</div><div class="label">Pending</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-info"><div class="num" id="deliveredCount">0</div><div class="label">Delivered</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange"><i class="fas fa-rupee-sign"></i></div>
+        <div class="stat-info"><div class="num" id="earningsAmount">₹0</div><div class="label">Earnings</div></div>
+      </div>
+    </div>
+
+    <!-- Delivery Table -->
+    <div class="data-table-wrap">
+      <div class="table-header">
+        <h3><i class="fas fa-motorcycle" style="color:var(--primary);margin-right:8px;"></i>Active Deliveries</h3>
+        <div style="display:flex;gap:8px;">
+          <button class="action-btn primary" onclick="filterDeliveries('active')">Active</button>
+          <button class="action-btn primary" onclick="filterDeliveries('all')">All</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Restaurant</th>
+              <th>Items</th>
+              <th>Status</th>
+              <th>Update Status</th>
+            </tr>
+          </thead>
+          <tbody id="deliveryTableBody">
+            <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-light);">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Today's Map placeholder -->
+    <div style="background:white;border-radius:16px;padding:24px;box-shadow:var(--shadow-sm);margin-top:24px;">
+      <h3 style="font-family:var(--font-display);font-weight:800;margin-bottom:16px;">📍 Delivery Zone</h3>
+      <div style="background:linear-gradient(135deg,#e0f2fe,#bae6fd);border-radius:12px;height:220px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+        <div style="text-align:center;">
+          <div style="font-size:3rem;margin-bottom:8px;">🗺️</div>
+          <p style="font-weight:700;color:#0369a1;">Bangalore, Karnataka</p>
+          <p style="font-size:0.82rem;color:#0284c7;margin-top:4px;">Active delivery zone</p>
+        </div>
+        <!-- Fake map dots -->
+        <div style="position:absolute;width:12px;height:12px;background:var(--primary);border-radius:50%;top:40%;left:45%;box-shadow:0 0 0 4px rgba(252,128,25,0.2);"></div>
+        <div style="position:absolute;width:8px;height:8px;background:var(--accent);border-radius:50%;top:30%;left:60%;"></div>
+        <div style="position:absolute;width:8px;height:8px;background:var(--accent);border-radius:50%;top:55%;left:35%;"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/orders.js"></script>
+<script src="js/delivery.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!AUTH.requireDelivery()) return;
+    const user = AUTH.getLoggedInUser();
+    document.getElementById('agentName').textContent = user.name;
+    initDeliveryDashboard();
+  });
+
+  function refreshDashboard() {
+    initDeliveryDashboard();
+    TOAST.show('Dashboard refreshed!', 'info');
+  }
+
+  function filterDeliveries(type) {
+    const user = AUTH.getLoggedInUser();
+    const allOrders = ORDERS.getOrders();
+    const orders = user.role === 'admin' ? allOrders : allOrders.filter(o => o.agentName === user.name || o.agentId === 'DA001');
+    const filtered = type === 'active' ? orders.filter(o => o.status !== 'Delivered') : orders;
+    const tbody = document.getElementById('deliveryTableBody');
+    tbody.innerHTML = '';
+    if (!filtered.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-light);">No orders found</td></tr>`;
+      return;
+    }
+    filtered.forEach(order => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>#${order.id.toString().slice(-6)}</strong></td>
+        <td>${order.userName}<br><small style="color:var(--text-light);">${order.userAddress || ''}</small></td>
+        <td>${order.restaurantName}</td>
+        <td>${order.items.map(i => `${i.emoji} ${i.name}`).join(', ').substring(0, 40)}</td>
+        <td><span class="status-badge ${getStatusClass(order.status)}">${order.status}</span></td>
+        <td>${order.status !== 'Delivered' ? `
+          <select class="form-select" onchange="updateDeliveryStatus(${order.id}, this.value)">
+            <option value="">Update...</option>
+            ${['Preparing','Picked Up','On The Way','Delivered'].map(s => `<option value="${s}" ${order.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>` : '✅ Done'}
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  }
+</script>
+<script src="js/chatbot.js"></script>
+</body>
+</html>

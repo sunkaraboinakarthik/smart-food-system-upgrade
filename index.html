@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartFood – Order Food Online</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">🍔</div>
+      <span class="logo-text">Smart<span>Food</span></span>
+    </a>
+    <div class="nav-search">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search restaurants, foods..." oninput="filterRestaurants(this.value)">
+    </div>
+    <div class="nav-actions">
+      <a href="offers.html" class="nav-btn btn-ghost" style="color:#FC8019;"><i class="fas fa-tag"></i> <span>Offers</span></a>
+      <a href="dashboard.html" class="nav-btn btn-ghost" id="dashBtn" style="display:none;"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+      <button class="theme-toggle-btn" onclick="THEME.toggle()" title="Toggle dark/light mode"><i class="fas fa-moon" id="themeIcon"></i></button>
+      <a href="login.html" class="nav-btn btn-ghost" id="loginBtn"><i class="fas fa-user"></i> <span>Login</span></a>
+      <div id="userMenu" style="display:none;align-items:center;gap:10px;">
+        <a href="dashboard.html" style="font-weight:700;font-size:0.9rem;color:var(--text-mid);text-decoration:none;">Hi, <span id="userName"></span>! <i class="fas fa-th-large" style="color:var(--primary);font-size:0.8rem;"></i></a>
+        <button class="nav-btn btn-ghost" onclick="AUTH.logout()" style="font-size:0.82rem;padding:7px 14px;"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+      <a href="cart.html" class="cart-btn">
+        <i class="fas fa-shopping-cart"></i> Cart
+        <span class="cart-count" id="cartCount" style="display:none;">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge"><i class="fas fa-bolt"></i> Fast Delivery · Fresh Food</div>
+      <h1>Delicious Food,<br><span>Delivered Fast</span><br>To Your Door</h1>
+      <p>Order from the best restaurants near you. 30-minute delivery guarantee on every order.</p>
+      <div class="hero-search">
+        <button class="location-select"><i class="fas fa-map-marker-alt"></i> Bangalore</button>
+        <input class="hero-search-input" type="text" placeholder="Search for food, restaurants...">
+        <button class="hero-search-btn" onclick="window.location.href='restaurants.html'">Find Food</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">500+</span><span class="stat-label">Restaurants</span></div>
+        <div class="stat"><span class="stat-num">30min</span><span class="stat-label">Avg Delivery</span></div>
+        <div class="stat"><span class="stat-num">50K+</span><span class="stat-label">Happy Orders</span></div>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="hero-food-card">
+        <div style="width:100%;height:200px;border-radius:16px;overflow:hidden;margin-bottom:16px;">
+          <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&h=280&fit=crop&auto=format" alt="Margherita Pizza" style="width:100%;height:100%;object-fit:cover;">
+        </div>
+        <div class="hero-food-info">
+          <h3>Margherita Pizza</h3>
+          <div class="hero-food-meta">
+            <span class="price">₹299</span>
+            <span class="rating"><i class="fas fa-star"></i> 4.8</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<div class="categories">
+  <div class="categories-inner">
+    <button class="category-pill active" onclick="filterByCategory('all', this)"><span class="emoji">🍽️</span> All</button>
+    <button class="category-pill" onclick="filterByCategory('pizza', this)"><span class="emoji">🍕</span> Pizza</button>
+    <button class="category-pill" onclick="filterByCategory('burger', this)"><span class="emoji">🍔</span> Burgers</button>
+    <button class="category-pill" onclick="filterByCategory('biryani', this)"><span class="emoji">🍛</span> Biryani</button>
+    <button class="category-pill" onclick="filterByCategory('chinese', this)"><span class="emoji">🍜</span> Chinese</button>
+    <button class="category-pill" onclick="filterByCategory('south', this)"><span class="emoji">🥘</span> South Indian</button>
+    <button class="category-pill" onclick="filterByCategory('fast', this)"><span class="emoji">🌯</span> Fast Food</button>
+  </div>
+</div>
+
+<!-- RESTAURANTS -->
+<section class="section" style="background:white;">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2 class="section-title">Restaurants <span>Near You</span></h2>
+      <a href="restaurants.html" class="see-all">See all →</a>
+    </div>
+    <div class="restaurants-grid" id="restaurantsGrid"></div>
+  </div>
+</section>
+
+<!-- POPULAR FOOD -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2 class="section-title">🔥 Popular <span>Right Now</span></h2>
+    </div>
+    <div class="food-grid" id="popularGrid"></div>
+  </div>
+</section>
+
+<!-- FEATURES BANNER -->
+<section class="section" style="background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 60px 5%;">
+  <div class="section-inner">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px;text-align:center;">
+      <div>
+        <div style="font-size:3rem;margin-bottom:12px;">⚡</div>
+        <h3 style="color:white;font-family:var(--font-display);font-weight:800;margin-bottom:8px;">Lightning Fast</h3>
+        <p style="color:rgba(255,255,255,0.55);font-size:0.9rem;">30-minute delivery guaranteed or your next order is free</p>
+      </div>
+      <div>
+        <div style="font-size:3rem;margin-bottom:12px;">🛡️</div>
+        <h3 style="color:white;font-family:var(--font-display);font-weight:800;margin-bottom:8px;">Safe & Hygienic</h3>
+        <p style="color:rgba(255,255,255,0.55);font-size:0.9rem;">All our restaurant partners follow strict hygiene standards</p>
+      </div>
+      <div>
+        <div style="font-size:3rem;margin-bottom:12px;">💰</div>
+        <h3 style="color:white;font-family:var(--font-display);font-weight:800;margin-bottom:8px;">Best Prices</h3>
+        <p style="color:rgba(255,255,255,0.55);font-size:0.9rem;">Compare prices and get the best deals with promo codes</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo"><a href="index.html" class="logo"><div class="logo-icon">🍔</div><span class="logo-text" style="color:white;">Smart<span>Food</span></span></a></div>
+      <p class="footer-desc">Your favourite food, delivered hot & fresh at your doorstep. Connecting you to the best restaurants near you.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About Us</a>
+      <a href="#">Careers</a>
+      <a href="#">Blog</a>
+      <a href="#">Press</a>
+    </div>
+    <div class="footer-col">
+      <h4>For You</h4>
+      <a href="restaurants.html">Restaurants</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+      <a href="#">Offers</a>
+    </div>
+    <div class="footer-col">
+      <h4>Admin</h4>
+      <a href="admin-dashboard.html">Admin Panel</a>
+      <a href="delivery-dashboard.html">Delivery Panel</a>
+      <a href="#">Support</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 SmartFood. Made with ❤️ | <a href="admin-dashboard.html" style="color:var(--primary);">Admin: admin@smartfood.com / admin123</a></p>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/cart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    renderRestaurants(document.getElementById('restaurantsGrid'));
+    renderPopular();
+  });
+
+  function renderPopular() {
+    const popularItems = [];
+    Object.entries(FOOD_ITEMS).forEach(([rid, items]) => {
+      items.filter(i => i.popular).forEach(i => popularItems.push({ ...i, restaurantId: parseInt(rid) }));
+    });
+    const grid = document.getElementById('popularGrid');
+    grid.innerHTML = '';
+    popularItems.slice(0, 8).forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'food-card';
+      div.innerHTML = `
+        <div style="position:relative;height:170px;overflow:hidden;border-radius:16px 16px 0 0;">
+          <img src="${item.img}" alt="${item.name}"
+            style="width:100%;height:100%;object-fit:cover;transition:transform 0.45s ease;"
+            onmouseover="this.style.transform='scale(1.07)'"
+            onmouseout="this.style.transform='scale(1)'"
+            onerror="this.src='https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=220&fit=crop'">
+          <span class="food-veg-badge ${item.type}" style="position:absolute;top:10px;left:10px;"></span>
+          <span style="position:absolute;top:10px;right:10px;background:rgba(252,128,25,0.92);color:white;font-size:0.7rem;font-weight:800;padding:3px 8px;border-radius:6px;">🔥 Hot</span>
+        </div>
+        <div class="food-info">
+          <div class="food-name">${item.name}</div>
+          <div class="food-desc">${item.desc}</div>
+          <div class="food-footer">
+            <span class="food-price">₹${item.price}</span>
+            <button class="add-btn" onclick="addToCart(${item.id}, ${item.restaurantId})" id="add-btn-${item.id}">+ ADD</button>
+          </div>
+        </div>`;
+      grid.appendChild(div);
+    });
+  }
+
+  function filterByCategory(cat, btn) {
+    document.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const map = { pizza: [1], burger: [2], biryani: [3], fast: [4], chinese: [5], south: [6] };
+    const filtered = cat === 'all' ? RESTAURANTS : RESTAURANTS.filter(r => (map[cat] || []).includes(r.id));
+    renderRestaurants(document.getElementById('restaurantsGrid'), filtered);
+  }
+
+  function filterRestaurants(query) {
+    const filtered = RESTAURANTS.filter(r => r.name.toLowerCase().includes(query.toLowerCase()) || r.cuisine.toLowerCase().includes(query.toLowerCase()));
+    renderRestaurants(document.getElementById('restaurantsGrid'), filtered);
+  }
+</script>
+<script src="js/chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard – SmartFood</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ===== DASHBOARD PAGE STYLES ===== */
+    .dash-hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 48px 5% 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dash-hero::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(252,128,25,0.15) 0%, transparent 70%);
+      top: -100px; right: -100px; border-radius: 50%;
+    }
+    .dash-hero-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      position: relative;
+    }
+    .dash-welcome h1 {
+      font-family: var(--font-display); font-size: 2.4rem; font-weight: 800;
+      color: white; letter-spacing: -0.5px; margin-bottom: 6px;
+    }
+    .dash-welcome h1 span { color: var(--primary); }
+    .dash-welcome p { color: rgba(255,255,255,0.6); font-size: 1rem; }
+    .dash-hero-stats {
+      display: flex; gap: 16px; flex-wrap: wrap;
+    }
+    .dash-stat {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px; padding: 16px 22px; text-align: center; min-width: 100px;
+    }
+    .dash-stat-num {
+      font-family: var(--font-display); font-size: 1.8rem; font-weight: 800;
+      color: var(--primary); display: block; line-height: 1;
+    }
+    .dash-stat-lbl { color: rgba(255,255,255,0.55); font-size: 0.75rem; font-weight: 700; margin-top: 4px; }
+
+    /* Panel Grid */
+    .panels-wrap {
+      max-width: 1280px; margin: -44px auto 0; padding: 0 5% 60px;
+      position: relative; z-index: 2;
+    }
+    .panels-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .panel-card {
+      background: white; border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+      overflow: hidden; cursor: pointer;
+      text-decoration: none; color: inherit;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      display: flex; flex-direction: column;
+      border: 2px solid transparent;
+    }
+    .panel-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      border-color: var(--primary);
+    }
+    .panel-card.wide { grid-column: span 2; }
+    .panel-top {
+      padding: 28px 24px 20px;
+      flex: 1; display: flex; flex-direction: column;
+    }
+    .panel-icon-wrap {
+      width: 56px; height: 56px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; margin-bottom: 16px; flex-shrink: 0;
+    }
+    .panel-name {
+      font-family: var(--font-display); font-size: 1.15rem; font-weight: 800;
+      color: var(--secondary); margin-bottom: 6px;
+    }
+    .panel-desc { font-size: 0.85rem; color: var(--text-light); line-height: 1.55; flex: 1; }
+    .panel-footer {
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg);
+    }
+    .panel-action {
+      font-size: 0.82rem; font-weight: 800; color: var(--primary);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .panel-badge {
+      background: var(--primary); color: white;
+      padding: 3px 10px; border-radius: 50px;
+      font-size: 0.72rem; font-weight: 800;
+    }
+    .panel-badge.green { background: var(--accent); }
+    .panel-badge.red { background: var(--danger); }
+
+    /* Panel Preview Thumbnails */
+    .panel-preview {
+      height: 100px; overflow: hidden; position: relative;
+      display: flex; gap: 4px; padding: 0 16px; align-items: center;
+    }
+    .preview-img {
+      width: 70px; height: 70px; border-radius: 10px; object-fit: cover;
+      flex-shrink: 0; box-shadow: var(--shadow-sm);
+    }
+
+    /* Orders mini list in panel */
+    .mini-order {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .mini-order:last-child { border-bottom: none; }
+    .mini-order-emoji { font-size: 1.3rem; flex-shrink: 0; }
+    .mini-order-info { flex: 1; }
+    .mini-order-name { font-weight: 700; font-size: 0.82rem; }
+    .mini-order-meta { font-size: 0.72rem; color: var(--text-light); }
+    .mini-badge {
+      font-size: 0.7rem; font-weight: 800; padding: 2px 8px; border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* Offers strip inside panel */
+    .offers-strip { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; }
+    .offers-strip::-webkit-scrollbar { display: none; }
+    .offer-chip {
+      flex-shrink: 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; border-radius: 10px; padding: 10px 14px; text-align: center; min-width: 100px;
+    }
+    .offer-chip .code { font-family: monospace; font-weight: 800; font-size: 0.9rem; letter-spacing: 1px; }
+    .offer-chip .save { font-size: 0.72rem; opacity: 0.85; margin-top: 2px; }
+
+    /* Track progress mini */
+    .mini-track { padding: 4px 0; }
+    .mini-steps { display: flex; align-items: center; gap: 0; }
+    .mini-step {
+      display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1;
+    }
+    .mini-step-dot {
+      width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; background: var(--bg); color: var(--text-light);
+      transition: all 0.3s;
+    }
+    .mini-step.done .mini-step-dot { background: var(--accent); border-color: var(--accent); color: white; }
+    .mini-step.active .mini-step-dot {
+      background: var(--primary); border-color: var(--primary); color: white;
+      animation: pulse 1.5s infinite;
+    }
+    .mini-step-lbl { font-size: 0.62rem; font-weight: 700; color: var(--text-light); text-align: center; }
+    .mini-step.done .mini-step-lbl, .mini-step.active .mini-step-lbl { color: var(--text-dark); }
+    .mini-connector {
+      height: 2px; flex: 1; background: var(--border); margin-bottom: 18px;
+    }
+    .mini-connector.done { background: var(--accent); }
+
+    /* Profile panel */
+    .profile-info { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .profile-avatar {
+      width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      display: flex; align-items: center; justify-content: center; color: white;
+      font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; flex-shrink: 0;
+    }
+    .profile-name { font-weight: 800; font-size: 1rem; margin-bottom: 2px; }
+    .profile-email { font-size: 0.8rem; color: var(--text-light); }
+    .profile-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .profile-tag {
+      background: var(--bg); color: var(--text-mid); padding: 4px 10px;
+      border-radius: 50px; font-size: 0.75rem; font-weight: 700;
+    }
+
+    @media (max-width: 1024px) {
+      .panels-grid { grid-template-columns: repeat(2, 1fr); }
+      .panel-card.wide { grid-column: span 1; }
+    }
+    @media (max-width: 640px) {
+      .panels-grid { grid-template-columns: 1fr; }
+      .dash-welcome h1 { font-size: 1.8rem; }
+      .dash-hero-stats { display: none; }
+      .dash-hero { padding-bottom: 60px; }
+      .panels-wrap { margin-top: -30px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR (Same as Home) ===== -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">🍔</div>
+      <span class="logo-text">Smart<span>Food</span></span>
+    </a>
+    <div class="nav-search">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search restaurants, foods..." onclick="window.location.href='restaurants.html'">
+    </div>
+    <div class="nav-actions">
+      <a href="offers.html" class="nav-btn btn-ghost" style="color:#FC8019;"><i class="fas fa-tag"></i> <span>Offers</span></a>
+      <a href="dashboard.html" class="nav-btn btn-ghost" style="color:var(--primary);border-color:var(--primary);" id="dashBtn"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+      <a href="login.html" class="nav-btn btn-ghost" id="loginBtn"><i class="fas fa-user"></i> <span>Login</span></a>
+      <div id="userMenu" style="display:none;align-items:center;gap:10px;">
+        <span style="font-weight:700;font-size:0.9rem;color:var(--text-mid);">Hi, <span id="userName"></span>!</span>
+        <button class="nav-btn btn-ghost" onclick="AUTH.logout()" style="font-size:0.82rem;padding:7px 14px;"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+      <a href="cart.html" class="cart-btn">
+        <i class="fas fa-shopping-cart"></i> Cart
+        <span class="cart-count" id="cartCount" style="display:none;">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO WELCOME ===== -->
+<div class="dash-hero">
+  <div class="dash-hero-inner">
+    <div class="dash-welcome">
+      <h1>Hello, <span id="heroName">Foodie</span>! 👋</h1>
+      <p>Welcome back to SmartFood. What would you like to do today?</p>
+    </div>
+    <div class="dash-hero-stats" id="heroStats">
+      <div class="dash-stat"><span class="dash-stat-num" id="statOrders">0</span><div class="dash-stat-lbl">Orders</div></div>
+      <div class="dash-stat"><span class="dash-stat-num" id="statActive">0</span><div class="dash-stat-lbl">Active</div></div>
+      <div class="dash-stat"><span class="dash-stat-num" id="statPoints">240</span><div class="dash-stat-lbl">Points</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PANELS ===== -->
+<div class="panels-wrap">
+  <div class="panels-grid">
+
+    <!-- 1. Browse Restaurants -->
+    <a href="restaurants.html" class="panel-card">
+      <div class="panel-top">
+        <div class="panel-icon-wrap" style="background:#fff3e8;">🍽️</div>
+        <div class="panel-name">Browse Restaurants</div>
+        <div class="panel-desc">Explore 6+ restaurants near you. Pizza, Biryani, Burgers, Noodles and more.</div>
+        <div class="panel-preview" style="padding:12px 0 0; gap:8px; height:auto; flex-direction:row; flex-wrap:nowrap; overflow:hidden;">
+          <img class="preview-img" src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=140&h=140&fit=crop" alt="Pizza">
+          <img class="preview-img" src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=140&h=140&fit=crop" alt="Burger">
+          <img class="preview-img" src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=140&h=140&fit=crop" alt="Biryani">
+        </div>
+      </div>
+      <div class="panel-footer">
+        <span class="panel-action"><i class="fas fa-arrow-right"></i> View All Restaurants</span>
+        <span class="panel-badge">6 Open</span>
+      </div>
+    </a>
+
+    <!-- 2. My Orders -->
+    <a href="#" class="panel-card" onclick="event.preventDefault(); showSection('orders')">
+      <div class="panel-top">
+        <div class="panel-icon-wrap" style="background:#e8f0ff;">📦</div>
+        <div class="panel-name">My Orders</div>
+        <div class="panel-desc">View and manage all your past and current orders.</div>
+        <div id="ordersPreview" style="margin-top:12px;"></div>
+      </div>
+      <div class="panel-footer">
+        <span class="panel-action"><i class="fas fa-arrow-right"></i> View All Orders</span>
+        <span class="panel-badge green" id="activeOrdersBadge">0 Active</span>
+      </div>
+    </a>
+
+    <!-- 3. Track Order (WIDE) -->
+    <a href="#" class="panel-card wide" onclick="event.preventDefault(); showSection('track')">
+      <div class="panel-top">
+        <div class="panel-icon-wrap" style="background:#e8f8e8;">📍</div>
+        <div class="panel-name">Track Your Order</div>
+        <div class="panel-desc">See real-time status of your current delivery — from kitchen to doorstep.</div>
+        <div id="trackPreview" style="margin-top:14px;"></div>
+      </div>
+      <div class="panel-footer">
+        <span class="panel-action"><i class="fas fa-arrow-right"></i> Full Tracking View</span>
+        <span class="panel-badge" id="trackStatusBadge">Checking...</span>
+      </div>
+    </a>
+
+    <!-- 4. Offers & Deals -->
+    <a href="offers.html" class="panel-card">
+      <div class="panel-top">
+        <div class="panel-icon-wrap" style="background:#fce4ec;">🏷️</div>
+        <div class="panel-name">Offers & Deals</div>
+        <div class="panel-desc">Grab today's hot discounts and promo codes before they expire!</div>
+        <div class="offers-strip" style="margin-top:14px;">
+          <div class="offer-chip"><div class="code">SAVE50</div><div class="save">₹50 off</div></div>
+          <div class="offer-chip"><div class="code">WELCOME20</div><div class="save">20% off</div></div>
+          <div class="offer-chip"><div class="code">FIRSTORDER</div><div class="save">₹100 off</div></div>
+          <div class="offer-chip"><div class="code">SMARTFOOD</div><div class="save">15% off</div></div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <span class="panel-action"><i class="fas fa-arrow-right"></i> See All Offers</span>
+        <span class="panel-badge red">🔥 4 Live</span>
+      </div>
+    </a>
+
+    <!-- 5. Cart -->
+    <a href="cart.html" class="panel-card">
+      <div class="panel-top">
+        <div class="panel-icon-wrap" style="background:#fff8e1;">🛒</div>
+        <div class="panel-name">My Cart</div>
+        <div class="panel-desc">Review items in your cart and proceed to checkout.</div>
+        <div id="cartPreview" style="margin-top:14px;"></div>
+      </div>
+      <div class="panel-footer">
+        <span class="panel-action"><i class="fas fa-arrow-right"></i> View Cart</span>
+        <span class="panel-badge" id="cartPanelBadge" style="background:var(--text-light);">Empty</span>
+      </div>
+    </a>
+
+    <!-- 6. Profile -->
+    <a href="#" class="panel-card" onclick="event.preventDefault(); showSection('profile')">
+      <div class="panel-top">
+        <div class="panel-icon-wrap" style="background:#e0f7fa;">👤</div>
+        <div class="panel-name">My Profile</div>
+        <div class="panel-desc">View your account details, saved address and preferences.</div>
+        <div id="profilePreview" style="margin-top:14px;"></div>
+      </div>
+      <div class="panel-footer">
+        <span class="panel-action"><i class="fas fa-arrow-right"></i> Edit Profile</span>
+        <span class="panel-badge green">Verified</span>
+      </div>
+    </a>
+
+  </div><!-- /panels-grid -->
+
+  <!-- ===== INLINE SECTION PANELS (shown when panel is clicked) ===== -->
+  <div id="inlineSection" style="display:none; margin-top:32px;">
+
+    <!-- Section header bar -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button onclick="closeSection()" style="background:var(--bg);border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;color:var(--text-mid);transition:var(--transition);" onmouseover="this.style.background='#e0e0e0'" onmouseout="this.style.background='var(--bg)'">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2 id="sectionTitle" style="font-family:var(--font-display);font-size:1.5rem;font-weight:800;color:var(--secondary);margin:0;"></h2>
+      </div>
+      <div id="sectionTopAction"></div>
+    </div>
+
+    <!-- My Orders section -->
+    <div id="sec-orders" style="display:none;">
+      <div style="background:white;border-radius:20px;box-shadow:var(--shadow-sm);overflow:hidden;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--border);">
+          <button class="category-pill active" onclick="filterMyOrders('all',this)">All</button>
+          <button class="category-pill" onclick="filterMyOrders('Pending',this)">⏳ Pending</button>
+          <button class="category-pill" onclick="filterMyOrders('Preparing',this)">🍳 Preparing</button>
+          <button class="category-pill" onclick="filterMyOrders('On The Way',this)">🚴 On The Way</button>
+          <button class="category-pill" onclick="filterMyOrders('Delivered',this)">✅ Delivered</button>
+        </div>
+        <div id="myOrdersList" style="padding:4px 0;"></div>
+      </div>
+    </div>
+
+    <!-- Track Order section -->
+    <div id="sec-track" style="display:none;">
+      <div style="display:flex;gap:12px;margin-bottom:20px;">
+        <input type="text" id="dashTrackInput" class="form-input" placeholder="Enter Order ID to track..." style="flex:1;">
+        <button class="checkout-btn" style="width:auto;padding:12px 24px;white-space:nowrap;" onclick="dashTrackOrder()">
+          <i class="fas fa-search"></i> Track
+        </button>
+      </div>
+      <div id="dashTrackResult"></div>
+    </div>
+
+    <!-- Profile section -->
+    <div id="sec-profile" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div style="background:white;border-radius:20px;padding:28px;box-shadow:var(--shadow-sm);">
+          <h3 style="font-family:var(--font-display);font-weight:800;margin-bottom:20px;">Account Info</h3>
+          <div id="profileDetails"></div>
+        </div>
+        <div style="background:white;border-radius:20px;padding:28px;box-shadow:var(--shadow-sm);">
+          <h3 style="font-family:var(--font-display);font-weight:800;margin-bottom:20px;">🏆 Rewards</h3>
+          <div style="text-align:center;padding:12px 0;">
+            <div style="font-family:var(--font-display);font-size:3.5rem;font-weight:800;color:var(--primary);line-height:1;">240</div>
+            <div style="color:var(--text-light);margin:6px 0 16px;font-size:0.9rem;">SmartFood Points</div>
+            <div style="background:var(--bg);border-radius:10px;height:10px;margin-bottom:6px;">
+              <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));height:100%;border-radius:10px;width:60%;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text-light);">
+              <span>240 pts earned</span><span>400 pts = next reward</span>
+            </div>
+            <a href="offers.html" class="checkout-btn" style="display:block;margin-top:16px;">View Rewards →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /inlineSection -->
+
+</div><!-- /panels-wrap -->
+
+<!-- ===== FOOTER (Same as Home) ===== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo"><a href="index.html" class="logo"><div class="logo-icon">🍔</div><span class="logo-text" style="color:white;">Smart<span>Food</span></span></a></div>
+      <p class="footer-desc">Your favourite food, delivered hot & fresh at your doorstep.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <a href="restaurants.html">Restaurants</a>
+      <a href="offers.html">Offers</a>
+      <a href="track-order.html">Track Order</a>
+      <a href="cart.html">Cart</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div class="footer-col">
+      <h4>Admin</h4>
+      <a href="admin-dashboard.html">Admin Panel</a>
+      <a href="delivery-dashboard.html">Delivery Panel</a>
+    </div>
+  </div>
+  <div class="footer-bottom"><p>© 2024 SmartFood – Delivering Happiness ❤️</p></div>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/orders.js"></script>
+<script src="js/chatbot.js"></script>
+<script>
+  const STATUS_STEPS_D = ['Pending','Preparing','Picked Up','On The Way','Delivered'];
+  const STATUS_ICONS_D = { 'Pending':'fa-clock','Preparing':'fa-fire','Picked Up':'fa-box','On The Way':'fa-motorcycle','Delivered':'fa-check-circle' };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!AUTH.requireLogin()) return;
+    const user = AUTH.getLoggedInUser();
+
+    // Hero
+    document.getElementById('heroName').textContent = user.name.split(' ')[0];
+
+    // Stats
+    const myOrders = ORDERS.getUserOrders(user.id);
+    document.getElementById('statOrders').textContent = myOrders.length;
+    document.getElementById('statActive').textContent = myOrders.filter(o => o.status !== 'Delivered' && o.status !== 'Cancelled').length;
+
+    // Panel: Orders preview
+    buildOrdersPreview(user, myOrders);
+
+    // Panel: Track preview
+    buildTrackPreview(myOrders);
+
+    // Panel: Cart
+    buildCartPreview();
+
+    // Panel: Profile
+    buildProfilePreview(user);
+  });
+
+  function buildOrdersPreview(user, myOrders) {
+    const el = document.getElementById('ordersPreview');
+    const active = myOrders.filter(o => o.status !== 'Delivered' && o.status !== 'Cancelled').length;
+    document.getElementById('activeOrdersBadge').textContent = active + ' Active';
+    document.getElementById('activeOrdersBadge').style.background = active > 0 ? 'var(--accent)' : 'var(--text-light)';
+
+    if (!myOrders.length) {
+      el.innerHTML = '<p style="color:var(--text-light);font-size:0.85rem;text-align:center;padding:8px 0;">No orders yet — start ordering! 🍕</p>';
+      return;
+    }
+    el.innerHTML = myOrders.slice(0, 3).map(o => `
+      <div class="mini-order">
+        <div class="mini-order-emoji">${o.items[0]?.emoji || '🍽️'}</div>
+        <div class="mini-order-info">
+          <div class="mini-order-name">${o.items[0]?.name}${o.items.length > 1 ? ' +' + (o.items.length-1) + ' more' : ''}</div>
+          <div class="mini-order-meta">₹${o.total} · ${o.restaurantName}</div>
+        </div>
+        <span class="mini-badge ${getBadgeCls(o.status)}">${o.status}</span>
+      </div>`).join('');
+  }
+
+  function buildTrackPreview(myOrders) {
+    const activeOrder = myOrders.find(o => o.status !== 'Delivered' && o.status !== 'Cancelled');
+    const badge = document.getElementById('trackStatusBadge');
+
+    if (!activeOrder) {
+      document.getElementById('trackPreview').innerHTML = '<p style="color:var(--text-light);font-size:0.85rem;">No active orders right now.</p>';
+      badge.textContent = 'No Active Order';
+      badge.style.background = 'var(--text-light)';
+      return;
+    }
+
+    badge.textContent = activeOrder.status;
+    badge.style.background = activeOrder.status === 'On The Way' ? 'var(--accent)' : 'var(--primary)';
+
+    const currentStep = STATUS_STEPS_D.indexOf(activeOrder.status);
+    document.getElementById('trackPreview').innerHTML = `
+      <div style="margin-bottom:8px;font-size:0.8rem;color:var(--text-mid);font-weight:700;">
+        Order #${String(activeOrder.id).slice(-6)} · ${activeOrder.restaurantName}
+      </div>
+      <div class="mini-steps">
+        ${STATUS_STEPS_D.map((s, i) => `
+          <div class="mini-step ${i < currentStep ? 'done' : ''} ${i === currentStep ? 'active' : ''}">
+            <div class="mini-step-dot"><i class="fas ${STATUS_ICONS_D[s]} " style="font-size:0.65rem;"></i></div>
+            <div class="mini-step-lbl">${s.split(' ')[0]}</div>
+          </div>
+          ${i < STATUS_STEPS_D.length-1 ? `<div class="mini-connector ${i < currentStep ? 'done' : ''}"></div>` : ''}
+        `).join('')}
+      </div>`;
+  }
+
+  function buildCartPreview() {
+    const cart = CART.getCart();
+    const el = document.getElementById('cartPreview');
+    const badge = document.getElementById('cartPanelBadge');
+    if (!cart.length) {
+      el.innerHTML = '<p style="color:var(--text-light);font-size:0.85rem;">Your cart is empty 🛒</p>';
+      badge.textContent = 'Empty';
+      badge.style.background = 'var(--text-light)';
+      return;
+    }
+    const total = CART.getSubtotal();
+    badge.textContent = cart.length + ' items · ₹' + total;
+    badge.style.background = 'var(--primary)';
+    el.innerHTML = cart.slice(0, 3).map(i => `
+      <div class="mini-order">
+        <img src="${i.img}" style="width:32px;height:32px;border-radius:8px;object-fit:cover;" onerror="this.style.display='none'">
+        <div class="mini-order-info">
+          <div class="mini-order-name">${i.name}</div>
+          <div class="mini-order-meta">×${i.quantity} · ₹${i.price * i.quantity}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  function buildProfilePreview(user) {
+    document.getElementById('profilePreview').innerHTML = `
+      <div class="profile-info">
+        <div class="profile-avatar">${user.name[0].toUpperCase()}</div>
+        <div>
+          <div class="profile-name">${user.name}</div>
+          <div class="profile-email">${user.email}</div>
+        </div>
+      </div>
+      <div class="profile-tags">
+        <span class="profile-tag"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${user.address || 'No address'}</span>
+        <span class="profile-tag"><i class="fas fa-shield-alt" style="color:var(--accent);"></i> ${user.role}</span>
+      </div>`;
+
+    // Full profile section
+    document.getElementById('profileDetails').innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="profile-info" style="margin:0;">
+          <div class="profile-avatar" style="width:64px;height:64px;font-size:1.6rem;">${user.name[0].toUpperCase()}</div>
+          <div><div class="profile-name" style="font-size:1.1rem;">${user.name}</div><div class="profile-email">${user.email}</div></div>
+        </div>
+        ${[['fas fa-map-marker-alt','Delivery Address', user.address || 'Not set'],
+           ['fas fa-user-tag','Account Role', user.role],
+           ['fas fa-id-badge','User ID', '#' + user.id]
+          ].map(([ic,lbl,val]) => `
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--bg);border-radius:10px;">
+            <i class="${ic}" style="color:var(--primary);margin-top:2px;width:16px;"></i>
+            <div><div style="font-size:0.75rem;color:var(--text-light);font-weight:700;">${lbl}</div><div style="font-weight:700;font-size:0.9rem;margin-top:2px;">${val}</div></div>
+          </div>`).join('')}
+        <a href="logout" onclick="AUTH.logout()" style="display:flex;align-items:center;gap:8px;color:var(--danger);font-weight:800;font-size:0.88rem;text-decoration:none;padding:8px 0;">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>`;
+  }
+
+  // ===== SECTION PANEL LOGIC =====
+  function showSection(name) {
+    const user = AUTH.getLoggedInUser();
+    const myOrders = ORDERS.getUserOrders(user?.id);
+
+    const titles = { orders:'📦 My Orders', track:'📍 Track Order', profile:'👤 My Profile' };
+    const topActions = {
+      orders: `<a href="restaurants.html" class="checkout-btn" style="width:auto;padding:10px 20px;display:inline-block;font-size:0.88rem;">+ New Order</a>`,
+      track: `<a href="track-order.html" class="checkout-btn" style="width:auto;padding:10px 20px;display:inline-block;font-size:0.88rem;"><i class="fas fa-external-link-alt"></i> Full Page</a>`,
+      profile: `<a href="register.html" class="nav-btn btn-ghost" style="font-size:0.85rem;"><i class="fas fa-edit"></i> Edit</a>`
+    };
+
+    document.getElementById('sectionTitle').textContent = titles[name] || '';
+    document.getElementById('sectionTopAction').innerHTML = topActions[name] || '';
+
+    ['orders','track','profile'].forEach(s => {
+      document.getElementById('sec-' + s).style.display = s === name ? 'block' : 'none';
+    });
+
+    document.getElementById('inlineSection').style.display = 'block';
+    document.getElementById('inlineSection').scrollIntoView({ behavior:'smooth', block:'start' });
+
+    // Populate each section
+    if (name === 'orders') renderMyOrdersList(myOrders);
+    if (name === 'track') loadLatestTrack(myOrders);
+    if (name === 'profile') {} // already built in DOMContentLoaded
+  }
+
+  function closeSection() {
+    document.getElementById('inlineSection').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderMyOrdersList(orders) {
+    const el = document.getElementById('myOrdersList');
+    if (!orders.length) {
+      el.innerHTML = `<div style="text-align:center;padding:48px 20px;">
+        <div style="font-size:48px;margin-bottom:12px;">📦</div>
+        <h3 style="font-family:var(--font-display);font-weight:800;margin-bottom:6px;">No Orders Yet</h3>
+        <p style="color:var(--text-light);margin-bottom:16px;">Time to order something delicious!</p>
+        <a href="restaurants.html" class="checkout-btn" style="display:inline-block;width:auto;padding:12px 28px;">Browse Restaurants</a>
+      </div>`;
+      return;
+    }
+    el.innerHTML = orders.map(o => `
+      <div style="display:flex;align-items:center;gap:16px;padding:16px 20px;border-bottom:1px solid var(--border);transition:var(--transition);" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='white'">
+        <div style="width:52px;height:52px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">${o.items[0]?.emoji||'🍽️'}</div>
+        <div style="flex:1;">
+          <div style="font-weight:800;font-size:0.95rem;">${o.items.map(i=>i.name).join(', ').slice(0,50)}${o.items.length>2?'…':''}</div>
+          <div style="font-size:0.8rem;color:var(--text-light);margin-top:2px;">${o.restaurantName} · ₹${o.total} · ${new Date(o.createdAt).toLocaleDateString()}</div>
+        </div>
+        <span class="status-badge ${getBadgeCls(o.status)}" style="flex-shrink:0;">${o.status}</span>
+        <a href="track-order.html?id=${o.id}" style="color:var(--primary);font-weight:800;font-size:0.82rem;text-decoration:none;flex-shrink:0;white-space:nowrap;">Track <i class="fas fa-arrow-right"></i></a>
+      </div>`).join('');
+  }
+
+  function filterMyOrders(status, btn) {
+    document.querySelectorAll('#sec-orders .category-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const user = AUTH.getLoggedInUser();
+    const all = ORDERS.getUserOrders(user.id);
+    const filtered = status === 'all' ? all : all.filter(o => o.status === status);
+    renderMyOrdersList(filtered);
+  }
+
+  function loadLatestTrack(orders) {
+    const active = orders.find(o => o.status !== 'Delivered' && o.status !== 'Cancelled');
+    if (active) {
+      document.getElementById('dashTrackInput').value = active.id;
+      dashTrackOrder();
+    } else if (orders.length > 0) {
+      document.getElementById('dashTrackInput').value = orders[0].id;
+      dashTrackOrder();
+    }
+  }
+
+  function dashTrackOrder() {
+    const id = document.getElementById('dashTrackInput').value.trim();
+    if (!id) return;
+    const order = ORDERS.getOrderById(id);
+    const el = document.getElementById('dashTrackResult');
+
+    if (!order) {
+      el.innerHTML = `<div style="text-align:center;padding:32px;background:white;border-radius:16px;box-shadow:var(--shadow-sm);">
+        <div style="font-size:40px;margin-bottom:10px;">🔍</div>
+        <h4 style="font-weight:800;margin-bottom:6px;">Order not found</h4>
+        <p style="color:var(--text-light);font-size:0.88rem;">Check the order ID and try again.</p>
+      </div>`; return;
+    }
+
+    const currentStep = STATUS_STEPS_D.indexOf(order.status);
+    el.innerHTML = `
+      <div style="background:white;border-radius:20px;padding:28px;box-shadow:var(--shadow-sm);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:1.1rem;">Order #${String(order.id).slice(-6)}</div>
+            <div style="color:var(--text-light);font-size:0.82rem;margin-top:2px;">${new Date(order.createdAt).toLocaleString()} · ${order.restaurantName}</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <span class="status-badge ${getBadgeCls(order.status)}">${order.status}</span>
+            <a href="track-order.html?id=${order.id}" class="nav-btn btn-primary" style="font-size:0.8rem;padding:7px 14px;text-decoration:none;"><i class="fas fa-external-link-alt"></i> Full View</a>
+          </div>
+        </div>
+
+        <!-- Progress steps -->
+        <div style="display:flex;align-items:center;margin-bottom:28px;">
+          ${STATUS_STEPS_D.map((s,i) => `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;">
+              <div style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;
+                ${i < currentStep ? 'background:var(--accent);color:white;border:2px solid var(--accent);' :
+                  i === currentStep ? 'background:var(--primary);color:white;border:2px solid var(--primary);box-shadow:0 0 0 6px rgba(252,128,25,0.15);' :
+                  'background:var(--bg);color:var(--text-light);border:2px solid var(--border);'}">
+                <i class="fas ${STATUS_ICONS_D[s]}"></i>
+              </div>
+              <div style="font-size:0.68rem;font-weight:700;color:${i<=currentStep?'var(--text-dark)':'var(--text-light)'};text-align:center;line-height:1.3;">${s}</div>
+            </div>
+            ${i < STATUS_STEPS_D.length-1 ? `<div style="height:2px;flex:0.5;background:${i<currentStep?'var(--accent)':'var(--border)'};margin-bottom:22px;"></div>` : ''}
+          `).join('')}
+        </div>
+
+        <!-- Items + summary -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <div style="font-weight:800;font-size:0.9rem;margin-bottom:10px;color:var(--text-mid);">ITEMS ORDERED</div>
+            ${order.items.map(i=>`
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.85rem;">
+                <span>${i.emoji} ${i.name} ×${i.quantity}</span>
+                <span style="font-weight:700;">₹${i.price*i.quantity}</span>
+              </div>`).join('')}
+          </div>
+          <div>
+            <div style="font-weight:800;font-size:0.9rem;margin-bottom:10px;color:var(--text-mid);">DELIVERY DETAILS</div>
+            <div style="font-size:0.85rem;display:flex;flex-direction:column;gap:8px;">
+              <div><span style="color:var(--text-light);">Agent:</span> <strong>${order.agentName || 'Assigning...'}</strong></div>
+              <div><span style="color:var(--text-light);">Address:</span> <strong>${order.userAddress||'—'}</strong></div>
+              <div><span style="color:var(--text-light);">Payment:</span> <strong>${order.paymentMethod}</strong></div>
+              <div><span style="color:var(--text-light);">Total:</span> <strong style="color:var(--primary);">₹${order.total}</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function getBadgeCls(s) {
+    return { 'Pending':'badge-pending','Preparing':'badge-preparing','Picked Up':'badge-picked','On The Way':'badge-onway','Delivered':'badge-delivered','Cancelled':'badge-cancelled' }[s] || 'badge-pending';
+  }
+</script>
+</body>
+</html>

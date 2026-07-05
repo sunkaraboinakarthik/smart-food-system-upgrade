@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offers & Deals – SmartFood</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ===== OFFERS PAGE STYLES ===== */
+    .offers-hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 60px 5%;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .offers-hero::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(252,128,25,0.18), transparent 70%);
+      top: -150px; left: 50%; transform: translateX(-50%);
+    }
+    .offers-hero h1 {
+      font-family: var(--font-display); font-size: 3rem; font-weight: 800;
+      color: white; position: relative; letter-spacing: -1px; margin-bottom: 12px;
+    }
+    .offers-hero h1 span { color: var(--primary); }
+    .offers-hero p { color: rgba(255,255,255,0.6); font-size: 1.05rem; position: relative; }
+
+    /* Ticker */
+    .ticker-wrap {
+      background: var(--primary); color: white; padding: 10px 0; overflow: hidden;
+    }
+    .ticker-inner {
+      display: flex; gap: 60px; animation: ticker 20s linear infinite; white-space: nowrap;
+    }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .ticker-item { font-weight: 800; font-size: 0.88rem; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    /* Big Banner Cards */
+    .banner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+    .banner-card {
+      border-radius: 20px; overflow: hidden; position: relative; cursor: pointer;
+      min-height: 200px; transition: var(--transition);
+    }
+    .banner-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .banner-card img { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .banner-overlay {
+      position: absolute; inset: 0; background: linear-gradient(120deg, rgba(0,0,0,0.72) 40%, transparent);
+      display: flex; flex-direction: column; justify-content: center; padding: 28px;
+    }
+    .banner-tag {
+      background: var(--primary); color: white; font-size: 0.72rem; font-weight: 800;
+      padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+      width: fit-content; margin-bottom: 10px;
+    }
+    .banner-title { color: white; font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
+    .banner-sub { color: rgba(255,255,255,0.75); font-size: 0.88rem; margin-bottom: 14px; }
+    .banner-btn {
+      background: white; color: var(--secondary); border: none; padding: 8px 18px; border-radius: 8px;
+      font-family: var(--font-primary); font-weight: 800; font-size: 0.82rem; cursor: pointer;
+      width: fit-content; transition: var(--transition);
+    }
+    .banner-btn:hover { background: var(--primary); color: white; }
+
+    /* Promo Code Cards */
+    .promo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+    .promo-card {
+      background: white; border-radius: 16px; padding: 0; overflow: hidden;
+      box-shadow: var(--shadow-sm); transition: var(--transition); border: 2px solid transparent;
+    }
+    .promo-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+    .promo-top {
+      padding: 20px; display: flex; align-items: center; gap: 14px;
+    }
+    .promo-icon {
+      width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center;
+      justify-content: center; font-size: 1.5rem; flex-shrink: 0;
+    }
+    .promo-info h4 { font-family: var(--font-display); font-weight: 800; font-size: 1rem; margin-bottom: 2px; }
+    .promo-info p { font-size: 0.82rem; color: var(--text-light); }
+    .promo-code-row {
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px dashed var(--border); padding: 12px 20px;
+      background: var(--bg);
+    }
+    .promo-code-text {
+      font-family: monospace; font-size: 1rem; font-weight: 800; color: var(--primary);
+      letter-spacing: 2px; background: var(--primary-light); padding: 5px 12px; border-radius: 6px;
+    }
+    .copy-btn {
+      padding: 7px 14px; background: var(--primary); color: white; border: none;
+      border-radius: 8px; font-family: var(--font-primary); font-weight: 800; font-size: 0.8rem;
+      cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 5px;
+    }
+    .copy-btn:hover { background: var(--primary-dark); }
+    .copy-btn.copied { background: var(--accent); }
+    .promo-validity { font-size: 0.75rem; color: var(--text-light); padding: 0 20px 12px; }
+
+    /* Deal Cards - restaurant offers */
+    .deal-card {
+      background: white; border-radius: 16px; overflow: hidden;
+      box-shadow: var(--shadow-sm); transition: var(--transition);
+    }
+    .deal-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .deal-img { position: relative; height: 160px; overflow: hidden; }
+    .deal-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+    .deal-card:hover .deal-img img { transform: scale(1.07); }
+    .deal-badge {
+      position: absolute; top: 12px; left: 12px; background: var(--danger);
+      color: white; padding: 5px 12px; border-radius: 8px; font-weight: 800; font-size: 0.8rem;
+    }
+    .deal-info { padding: 14px; }
+    .deal-name { font-weight: 800; font-size: 0.95rem; margin-bottom: 3px; }
+    .deal-rest { font-size: 0.8rem; color: var(--text-light); margin-bottom: 8px; }
+    .deal-footer { display: flex; justify-content: space-between; align-items: center; }
+    .deal-price { display: flex; align-items: baseline; gap: 6px; }
+    .deal-orig { font-size: 0.85rem; color: var(--text-light); text-decoration: line-through; }
+    .deal-new { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; color: var(--primary); }
+    .deal-btn {
+      padding: 7px 14px; background: var(--primary-light); color: var(--primary);
+      border: none; border-radius: 8px; font-family: var(--font-primary); font-weight: 800;
+      font-size: 0.82rem; cursor: pointer; transition: var(--transition);
+    }
+    .deal-btn:hover { background: var(--primary); color: white; }
+
+    /* Timer */
+    .countdown-box {
+      background: linear-gradient(135deg, var(--danger), #c0392b);
+      border-radius: 16px; padding: 20px 28px;
+      display: flex; align-items: center; gap: 20px; color: white; margin-bottom: 40px;
+    }
+    .countdown-label { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; }
+    .countdown-label p { font-size: 0.82rem; font-weight: 400; opacity: 0.8; margin-top: 2px; }
+    .timer-units { display: flex; gap: 12px; margin-left: auto; }
+    .timer-unit { text-align: center; }
+    .timer-num {
+      background: rgba(255,255,255,0.2); border-radius: 8px; padding: 8px 14px;
+      font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; min-width: 54px;
+      display: block; text-align: center;
+    }
+    .timer-lbl { font-size: 0.7rem; font-weight: 700; opacity: 0.7; margin-top: 4px; text-transform: uppercase; }
+
+    /* Loyalty */
+    .loyalty-card {
+      background: linear-gradient(135deg, #1a1a2e, #0f3460);
+      border-radius: 20px; padding: 32px; display: grid; grid-template-columns: 1fr auto;
+      gap: 24px; align-items: center; margin-bottom: 40px;
+    }
+    .loyalty-title { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: white; margin-bottom: 8px; }
+    .loyalty-desc { color: rgba(255,255,255,0.6); font-size: 0.92rem; line-height: 1.6; margin-bottom: 16px; }
+    .loyalty-progress { background: rgba(255,255,255,0.15); border-radius: 50px; height: 10px; margin-bottom: 8px; }
+    .loyalty-bar { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); height: 100%; border-radius: 50px; width: 60%; }
+    .loyalty-meta { display: flex; justify-content: space-between; font-size: 0.8rem; color: rgba(255,255,255,0.55); }
+    .loyalty-points { text-align: center; }
+    .points-num { font-family: var(--font-display); font-size: 3rem; font-weight: 800; color: var(--primary); line-height: 1; }
+    .points-lbl { color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-top: 4px; }
+
+    @media (max-width: 768px) {
+      .banner-grid { grid-template-columns: 1fr; }
+      .offers-hero h1 { font-size: 2rem; }
+      .loyalty-card { grid-template-columns: 1fr; }
+      .countdown-box { flex-direction: column; align-items: flex-start; }
+      .timer-units { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">🍔</div>
+      <span class="logo-text">Smart<span>Food</span></span>
+    </a>
+    <div class="nav-search">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search offers...">
+    </div>
+    <div class="nav-actions">
+      <a href="offers.html" class="nav-btn btn-ghost" style="color:var(--primary);border-color:var(--primary);"><i class="fas fa-tag"></i> <span>Offers</span></a>
+      <a href="login.html" class="nav-btn btn-ghost" id="loginBtn"><i class="fas fa-user"></i> <span>Login</span></a>
+      <div id="userMenu" style="display:none;align-items:center;gap:10px;">
+        <a href="dashboard.html" style="font-weight:700;font-size:0.9rem;color:var(--text-mid);text-decoration:none;">Hi, <span id="userName"></span>! <i class="fas fa-th-large" style="color:var(--primary);font-size:0.8rem;"></i></a>
+        <button class="nav-btn btn-ghost" onclick="AUTH.logout()" style="font-size:0.82rem;padding:7px 14px;"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+      <a href="cart.html" class="cart-btn">
+        <i class="fas fa-shopping-cart"></i> Cart
+        <span class="cart-count" id="cartCount" style="display:none;">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="offers-hero">
+  <div style="position:relative;">
+    <div class="hero-badge" style="margin:0 auto 16px; width:fit-content;"><i class="fas fa-bolt"></i> Limited Time Deals</div>
+    <h1>Hot <span>Offers</span> &amp; Deals 🔥</h1>
+    <p>Grab the best discounts before they're gone. New deals added daily!</p>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="ticker">
+    <span class="ticker-item">🔥 Use code SAVE50 – Flat ₹50 off</span>
+    <span class="ticker-item">🎁 FIRSTORDER – ₹100 off your first order</span>
+    <span class="ticker-item">🍕 Pizza Hub – 50% off all pizzas today!</span>
+    <span class="ticker-item">🚀 Free delivery on orders above ₹500</span>
+    <span class="ticker-item">💳 WELCOME20 – 20% off with any payment</span>
+    <span class="ticker-item">🍛 Biryani Palace – Buy 1 Get 1 this weekend</span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item">🔥 Use code SAVE50 – Flat ₹50 off</span>
+    <span class="ticker-item">🎁 FIRSTORDER – ₹100 off your first order</span>
+    <span class="ticker-item">🍕 Pizza Hub – 50% off all pizzas today!</span>
+    <span class="ticker-item">🚀 Free delivery on orders above ₹500</span>
+    <span class="ticker-item">💳 WELCOME20 – 20% off with any payment</span>
+    <span class="ticker-item">🍛 Biryani Palace – Buy 1 Get 1 this weekend</span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="section">
+  <div class="section-inner">
+
+    <!-- COUNTDOWN TIMER -->
+    <div class="countdown-box">
+      <div class="countdown-label">
+        <div>⚡ Flash Sale Ending Soon!</div>
+        <p>Hurry up — grab 50% off before time runs out</p>
+      </div>
+      <div class="timer-units">
+        <div class="timer-unit"><span class="timer-num" id="timerH">02</span><div class="timer-lbl">Hours</div></div>
+        <div class="timer-unit" style="align-self:flex-start;padding-top:8px;font-size:1.4rem;font-weight:800;">:</div>
+        <div class="timer-unit"><span class="timer-num" id="timerM">45</span><div class="timer-lbl">Mins</div></div>
+        <div class="timer-unit" style="align-self:flex-start;padding-top:8px;font-size:1.4rem;font-weight:800;">:</div>
+        <div class="timer-unit"><span class="timer-num" id="timerS">00</span><div class="timer-lbl">Secs</div></div>
+      </div>
+    </div>
+
+    <!-- BIG BANNERS -->
+    <div class="section-header"><h2 class="section-title">🏷️ Featured <span>Deals</span></h2></div>
+    <div class="banner-grid" style="margin-bottom:40px;">
+      <div class="banner-card">
+        <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=700&h=280&fit=crop&auto=format" alt="Pizza">
+        <div class="banner-overlay">
+          <span class="banner-tag">🔥 Today Only</span>
+          <div class="banner-title">50% Off All Pizzas</div>
+          <div class="banner-sub">At Pizza Hub – valid till midnight</div>
+          <button class="banner-btn" onclick="copyCode('SAVE50')">Use Code: SAVE50</button>
+        </div>
+      </div>
+      <div class="banner-card">
+        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700&h=280&fit=crop&auto=format" alt="Burger">
+        <div class="banner-overlay">
+          <span class="banner-tag">🆕 New User</span>
+          <div class="banner-title">₹100 Off First Order</div>
+          <div class="banner-sub">New users only – minimum order ₹500</div>
+          <button class="banner-btn" onclick="copyCode('FIRSTORDER')">Use Code: FIRSTORDER</button>
+        </div>
+      </div>
+      <div class="banner-card">
+        <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=700&h=280&fit=crop&auto=format" alt="Biryani">
+        <div class="banner-overlay">
+          <span class="banner-tag">🎉 Weekend Special</span>
+          <div class="banner-title">Buy 1 Get 1 Biryani</div>
+          <div class="banner-sub">At Biryani Palace – Saturdays &amp; Sundays</div>
+          <button class="banner-btn" onclick="window.location.href='menu.html?restaurant=3'">Order Now</button>
+        </div>
+      </div>
+      <div class="banner-card">
+        <img src="https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=700&h=280&fit=crop&auto=format" alt="Fries">
+        <div class="banner-overlay">
+          <span class="banner-tag">🚀 Free Delivery</span>
+          <div class="banner-title">Free Delivery Weekend</div>
+          <div class="banner-sub">All orders above ₹299 – no code needed</div>
+          <button class="banner-btn" onclick="window.location.href='restaurants.html'">Order Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROMO CODES -->
+    <div class="section-header"><h2 class="section-title">🎟️ Promo <span>Codes</span></h2></div>
+    <div class="promo-grid">
+      <div class="promo-card">
+        <div class="promo-top">
+          <div class="promo-icon" style="background:#fff3e8;">🔥</div>
+          <div class="promo-info">
+            <h4>Flat ₹50 Off</h4>
+            <p>On orders above ₹300 at any restaurant</p>
+          </div>
+        </div>
+        <div class="promo-validity">Valid till 31 Dec 2024 · All restaurants</div>
+        <div class="promo-code-row">
+          <span class="promo-code-text">SAVE50</span>
+          <button class="copy-btn" onclick="copyCode('SAVE50', this)"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+      </div>
+
+      <div class="promo-card">
+        <div class="promo-top">
+          <div class="promo-icon" style="background:#e8f8e8;">🌿</div>
+          <div class="promo-info">
+            <h4>20% Off Sitewide</h4>
+            <p>Min order ₹200 – welcome offer for all</p>
+          </div>
+        </div>
+        <div class="promo-validity">Valid till 31 Dec 2024 · All restaurants</div>
+        <div class="promo-code-row">
+          <span class="promo-code-text">WELCOME20</span>
+          <button class="copy-btn" onclick="copyCode('WELCOME20', this)"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+      </div>
+
+      <div class="promo-card">
+        <div class="promo-top">
+          <div class="promo-icon" style="background:#ede7f6;">🎁</div>
+          <div class="promo-info">
+            <h4>₹100 First Order</h4>
+            <p>New users only – min order ₹500</p>
+          </div>
+        </div>
+        <div class="promo-validity">One-time use · New users only</div>
+        <div class="promo-code-row">
+          <span class="promo-code-text">FIRSTORDER</span>
+          <button class="copy-btn" onclick="copyCode('FIRSTORDER', this)"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+      </div>
+
+      <div class="promo-card">
+        <div class="promo-top">
+          <div class="promo-icon" style="background:#fce4ec;">💳</div>
+          <div class="promo-info">
+            <h4>15% Off SmartFood</h4>
+            <p>Pay via any method – min order ₹150</p>
+          </div>
+        </div>
+        <div class="promo-validity">Valid till 31 Dec 2024 · All restaurants</div>
+        <div class="promo-code-row">
+          <span class="promo-code-text">SMARTFOOD</span>
+          <button class="copy-btn" onclick="copyCode('SMARTFOOD', this)"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODAY'S DEALS - Food Items on Sale -->
+    <div class="section-header"><h2 class="section-title">⚡ Today's <span>Best Deals</span></h2></div>
+    <div id="dealsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;margin-bottom:40px;"></div>
+
+    <!-- LOYALTY PROGRAM -->
+    <div class="loyalty-card">
+      <div>
+        <div class="loyalty-title">🏆 SmartFood Rewards</div>
+        <div class="loyalty-desc">Earn 10 points for every ₹100 spent. Redeem points for free food, discounts, and exclusive perks.</div>
+        <div class="loyalty-progress"><div class="loyalty-bar"></div></div>
+        <div class="loyalty-meta"><span>240 points earned</span><span>400 points for next reward</span></div>
+        <button class="nav-btn btn-primary" style="margin-top:16px;" onclick="window.location.href='register.html'">Join Rewards →</button>
+      </div>
+      <div class="loyalty-points">
+        <div class="points-num">240</div>
+        <div class="points-lbl">Your Points</div>
+        <div style="margin-top:12px;font-size:0.78rem;color:rgba(255,255,255,0.4);">= ₹24 cashback</div>
+      </div>
+    </div>
+
+    <!-- REFERRAL -->
+    <div style="background:white;border-radius:20px;padding:32px;box-shadow:var(--shadow-sm);text-align:center;">
+      <div style="font-size:3rem;margin-bottom:12px;">👥</div>
+      <h3 style="font-family:var(--font-display);font-size:1.5rem;font-weight:800;margin-bottom:8px;">Refer &amp; Earn</h3>
+      <p style="color:var(--text-mid);margin-bottom:20px;">Share SmartFood with your friends. You get ₹50 and they get ₹50 on their first order!</p>
+      <div style="display:flex;gap:10px;max-width:400px;margin:0 auto;">
+        <input type="text" class="form-input" value="MYREF-SF2024" readonly style="font-family:monospace;font-weight:800;color:var(--primary);text-align:center;letter-spacing:2px;">
+        <button class="copy-btn" onclick="copyCode('MYREF-SF2024', this)" style="white-space:nowrap;"><i class="fas fa-share-alt"></i> Share</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div style="max-width:1280px;margin:0 auto;text-align:center;">
+    <p>© 2024 SmartFood – Delivering Happiness 🍔</p>
+  </div>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/chatbot.js"></script>
+<script>
+  // Build deals grid from popular items with fake discounts
+  document.addEventListener('DOMContentLoaded', () => {
+    const deals = [
+      { id: 101, rid: 1, orig: 599, disc: 299, img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=200&fit=crop" },
+      { id: 201, rid: 2, orig: 399, disc: 249, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=200&fit=crop" },
+      { id: 301, rid: 3, orig: 499, disc: 329, img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&h=200&fit=crop" },
+      { id: 304, rid: 3, orig: 449, disc: 299, img: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=200&fit=crop" },
+      { id: 502, rid: 5, orig: 349, disc: 249, img: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=400&h=200&fit=crop" },
+      { id: 601, rid: 6, orig: 199, disc: 139, img: "https://images.unsplash.com/photo-1630383249896-424e482df921?w=400&h=200&fit=crop" },
+      { id: 401, rid: 4, orig: 279, disc: 199, img: "https://images.unsplash.com/photo-1553909489-cd47e0907980?w=400&h=200&fit=crop" },
+      { id: 204, rid: 2, orig: 199, disc: 149, img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&h=200&fit=crop" },
+    ];
+
+    const grid = document.getElementById('dealsGrid');
+    deals.forEach(d => {
+      const item = (FOOD_ITEMS[d.rid] || []).find(f => f.id === d.id);
+      if (!item) return;
+      const pct = Math.round((1 - d.disc / d.orig) * 100);
+      const div = document.createElement('div');
+      div.className = 'deal-card';
+      div.innerHTML = `
+        <div class="deal-img">
+          <img src="${d.img}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=200&fit=crop'">
+          <span class="deal-badge">${pct}% OFF</span>
+        </div>
+        <div class="deal-info">
+          <div class="deal-name">${item.name}</div>
+          <div class="deal-rest">${RESTAURANTS.find(r => r.id === d.rid)?.name}</div>
+          <div class="deal-footer">
+            <div class="deal-price">
+              <span class="deal-orig">₹${d.orig}</span>
+              <span class="deal-new">₹${d.disc}</span>
+            </div>
+            <button class="deal-btn" onclick="addToCart(${d.id}, ${d.rid})">+ ADD</button>
+          </div>
+        </div>`;
+      grid.appendChild(div);
+    });
+  });
+
+  // Copy promo code
+  function copyCode(code, btn) {
+    navigator.clipboard.writeText(code).then(() => {
+      TOAST.show(`Code "${code}" copied! Apply it at checkout.`, 'success');
+      if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+      }
+    }).catch(() => {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      TOAST.show(`Code "${code}" copied!`, 'success');
+    });
+  }
+
+  // Countdown timer
+  let endTime = Date.now() + (2 * 3600 + 45 * 60) * 1000;
+  function updateTimer() {
+    const diff = Math.max(0, endTime - Date.now());
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('timerH').textContent = String(h).padStart(2, '0');
+    document.getElementById('timerM').textContent = String(m).padStart(2, '0');
+    document.getElementById('timerS').textContent = String(s).padStart(2, '0');
+    if (diff === 0) endTime = Date.now() + 3600000; // reset
+  }
+  setInterval(updateTimer, 1000);
+  updateTimer();
+</script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register – SmartFood</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="background:white;">
+
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-food-icons">🍜 🍰 🥗</div>
+    <h2>Join SmartFood!</h2>
+    <p>Create your account and start ordering from thousands of restaurants near you. First order discount inside!</p>
+    <div style="margin-top:32px;background:rgba(252,128,25,0.15);border:1px solid rgba(252,128,25,0.3);border-radius:16px;padding:20px;position:relative;width:100%;max-width:300px;">
+      <div style="font-size:2rem;margin-bottom:8px;">🎁</div>
+      <div style="color:white;font-family:var(--font-display);font-weight:800;font-size:1.2rem;">Use code FIRSTORDER</div>
+      <div style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-top:4px;">Get ₹100 off on your first order above ₹500</div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form-container">
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;color:var(--text-light);text-decoration:none;font-size:0.88rem;font-weight:600;margin-bottom:20px;">
+        <i class="fas fa-arrow-left"></i> Back to Home
+      </a>
+      <h1>Create Account</h1>
+      <p class="subtitle">Join thousands of food lovers today</p>
+
+      <div class="alert" id="alertMsg"></div>
+
+      <!-- Profile picture -->
+      <div class="form-group" style="text-align:center;">
+        <label style="display:block;margin-bottom:8px;">Profile Picture (optional)</label>
+        <img id="picPreview" src="https://api.dicebear.com/7.x/initials/svg?seed=SmartFood" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--border);cursor:pointer;" onclick="document.getElementById('profilePic').click()">
+        <input type="file" id="profilePic" accept="image/*" style="display:none" onchange="previewPic(event)">
+      </div>
+
+      <div class="form-group">
+        <label>Full Name *</label>
+        <div class="input-icon">
+          <i class="fas fa-user"></i>
+          <input type="text" class="form-input" id="name" placeholder="Your full name">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Username (optional)</label>
+        <div class="input-icon">
+          <i class="fas fa-at"></i>
+          <input type="text" class="form-input" id="username" placeholder="Choose a username">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address *</label>
+        <div class="input-icon">
+          <i class="fas fa-envelope"></i>
+          <input type="email" class="form-input" id="email" placeholder="Enter your email">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number (optional)</label>
+        <div style="display:flex;gap:8px;">
+          <select id="countryCode" class="form-input" style="max-width:130px;flex:none;">
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+971">🇦🇪 +971</option>
+            <option value="+1">🇨🇦 +1</option>
+            <option value="+61">🇦🇺 +61</option>
+            <option value="+65">🇸🇬 +65</option>
+            <option value="+49">🇩🇪 +49</option>
+          </select>
+          <input type="tel" class="form-input" id="phone" placeholder="Phone number">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Password *</label>
+        <div class="input-icon">
+          <i class="fas fa-lock"></i>
+          <input type="password" class="form-input" id="password" placeholder="Min 8 chars, upper, lower, number, symbol" oninput="updateStrength()">
+          <i class="fas fa-eye" style="cursor:pointer;position:absolute;right:14px;left:auto;" onclick="togglePw('password', this)"></i>
+        </div>
+        <div class="pw-strength"><div class="pw-strength-bar" id="pwBar"></div></div>
+        <div class="pw-strength-label" id="pwLabel">e.g. SmartFood@123</div>
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password *</label>
+        <div class="input-icon">
+          <i class="fas fa-lock"></i>
+          <input type="password" class="form-input" id="confirmPassword" placeholder="Re-enter your password">
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;">
+        <div class="form-group" style="flex:1;">
+          <label>Date of Birth (optional)</label>
+          <input type="date" class="form-input" id="dob">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label>Gender (optional)</label>
+          <select class="form-input" id="gender">
+            <option value="">Prefer not to say</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="form-submit" onclick="handleRegister()" id="regBtn">
+        <i class="fas fa-user-plus"></i> Create Account
+      </button>
+
+      <div class="auth-switch">
+        Already have an account? <a href="login.html">Sign in</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OTP verification modal -->
+<div class="otp-modal-overlay" id="otpOverlay">
+  <div class="otp-modal">
+    <div style="font-size:2.4rem;">📧</div>
+    <h2 style="margin:10px 0 4px;">Verify your email</h2>
+    <p style="color:var(--text-light);font-size:0.9rem;" id="otpSubtext">Enter the 6-digit code we sent to your email.</p>
+    <div class="otp-inputs">
+      <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+    </div>
+    <button class="form-submit" onclick="submitOtp()" id="otpBtn"><i class="fas fa-check"></i> Verify & Activate</button>
+    <div style="margin-top:14px;font-size:0.85rem;">
+      Didn't get it? <a href="#" onclick="resendOtp();return false;">Resend OTP</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  let pendingEmail = '';
+
+  function previewPic(e) {
+    const file = e.target.files[0];
+    if (file) document.getElementById('picPreview').src = URL.createObjectURL(file);
+  }
+
+  function togglePw(id, icon) {
+    const el = document.getElementById(id);
+    el.type = el.type === 'password' ? 'text' : 'password';
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+  }
+
+  function passwordScore(pw) {
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[a-z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pw)) score++;
+    return score;
+  }
+
+  function updateStrength() {
+    const pw = document.getElementById('password').value;
+    const score = passwordScore(pw);
+    const bar = document.getElementById('pwBar');
+    const label = document.getElementById('pwLabel');
+    const pct = (score / 5) * 100;
+    bar.style.width = pct + '%';
+    const colors = ['#e23744', '#e23744', '#fc8019', '#fc8019', '#60b246', '#60b246'];
+    const labels = ['Very weak', 'Very weak', 'Weak', 'Fair', 'Good', 'Strong'];
+    bar.style.background = colors[score];
+    label.textContent = pw ? labels[score] : 'e.g. SmartFood@123';
+  }
+
+  // OTP box auto-advance
+  document.querySelectorAll('.otp-inputs input').forEach((input, idx, list) => {
+    input.addEventListener('input', () => {
+      if (input.value && idx < list.length - 1) list[idx + 1].focus();
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !input.value && idx > 0) list[idx - 1].focus();
+    });
+  });
+
+  function showAlert(msg, type) {
+    const alertEl = document.getElementById('alertMsg');
+    alertEl.textContent = msg;
+    alertEl.className = `alert alert-${type} show`;
+  }
+
+  async function handleRegister() {
+    const name = document.getElementById('name').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const country_code = document.getElementById('countryCode').value;
+    const phone = document.getElementById('phone').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm_password = document.getElementById('confirmPassword').value;
+    const dob = document.getElementById('dob').value;
+    const gender = document.getElementById('gender').value;
+    const btn = document.getElementById('regBtn');
+
+    if (!name || !email || !password) {
+      showAlert('Please fill in all required fields (name, email, password)', 'error');
+      return;
+    }
+    if (password !== confirm_password) {
+      showAlert('Passwords do not match', 'error');
+      return;
+    }
+
+    btn.innerHTML = '<span class="loading"></span> Creating account...';
+    btn.disabled = true;
+
+    const result = await AUTH.register({ name, username, email, country_code, phone, password, confirm_password, dob, gender });
+
+    if (result.success) {
+      pendingEmail = email;
+      document.getElementById('otpSubtext').textContent = `Enter the 6-digit code we sent to ${email}.`;
+      document.getElementById('otpOverlay').classList.add('show');
+      TOAST.show('Account created — verify your email to activate it', 'success');
+
+      // Upload profile picture after account exists is handled post-login (needs a token);
+      // for now we just store the file locally to attach after OTP verification.
+      const file = document.getElementById('profilePic').files[0];
+      if (file) window._pendingProfilePic = file;
+    } else {
+      showAlert(result.message, 'error');
+    }
+    btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+    btn.disabled = false;
+  }
+
+  async function submitOtp() {
+    const digits = [...document.querySelectorAll('.otp-inputs input')].map(i => i.value).join('');
+    if (digits.length !== 6) { TOAST.show('Enter the full 6-digit code', 'error'); return; }
+    const btn = document.getElementById('otpBtn');
+    btn.innerHTML = '<span class="loading"></span> Verifying...';
+
+    const result = await AUTH.verifyEmailOtp(pendingEmail, digits);
+    if (result.success) {
+      TOAST.show('🎉 Account activated! Redirecting...', 'success');
+      if (window._pendingProfilePic) {
+        const form = new FormData();
+        form.append('file', window._pendingProfilePic);
+        API.request('/auth/me/profile-picture', { method: 'POST', body: form, isForm: true }).catch(() => {});
+      }
+      setTimeout(() => window.location.href = 'index.html', 1200);
+    } else {
+      TOAST.show(result.message || 'Invalid OTP', 'error');
+      btn.innerHTML = '<i class="fas fa-check"></i> Verify & Activate';
+    }
+  }
+
+  async function resendOtp() {
+    const result = await AUTH.resendOtp(pendingEmail);
+    TOAST.show(result.success ? 'OTP resent' : (result.message || 'Could not resend OTP'), result.success ? 'success' : 'error');
+  }
+</script>
+<script src="js/chatbot.js"></script>
+</body>
+</html>

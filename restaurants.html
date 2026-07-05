@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurants – SmartFood</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">🍔</div>
+      <span class="logo-text">Smart<span>Food</span></span>
+    </a>
+    <div class="nav-search">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search restaurants..." oninput="handleSearch(this.value)" id="searchInput">
+    </div>
+    <div class="nav-actions">
+      <a href="offers.html" class="nav-btn btn-ghost" style="color:#FC8019;"><i class="fas fa-tag"></i> <span>Offers</span></a>
+      <a href="dashboard.html" class="nav-btn btn-ghost" id="dashBtn" style="display:none;"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+      <a href="login.html" class="nav-btn btn-ghost" id="loginBtn"><i class="fas fa-user"></i> <span>Login</span></a>
+      <div id="userMenu" style="display:none;align-items:center;gap:10px;">
+        <a href="dashboard.html" style="font-weight:700;font-size:0.9rem;color:var(--text-mid);text-decoration:none;">Hi, <span id="userName"></span>! <i class="fas fa-th-large" style="color:var(--primary);font-size:0.8rem;"></i></a>
+        <button class="nav-btn btn-ghost" onclick="AUTH.logout()" style="font-size:0.82rem;padding:7px 14px;"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+      <a href="cart.html" class="cart-btn">
+        <i class="fas fa-shopping-cart"></i> Cart
+        <span class="cart-count" id="cartCount" style="display:none;">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div style="background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:40px 5%;">
+  <div style="max-width:1280px;margin:0 auto;">
+    <div style="color:rgba(255,255,255,0.6);font-size:0.88rem;margin-bottom:8px;"><a href="index.html" style="color:var(--primary);text-decoration:none;">Home</a> / Restaurants</div>
+    <h1 style="color:white;font-family:var(--font-display);font-size:2.2rem;font-weight:800;">All Restaurants</h1>
+    <p style="color:rgba(255,255,255,0.6);margin-top:6px;">Discover the best places to eat near you</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="section-inner">
+    <!-- Filters -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;align-items:center;">
+      <span style="font-weight:800;font-size:0.9rem;color:var(--text-mid);">Filter:</span>
+      <button class="category-pill active" onclick="sortRestaurants('all', this)">All</button>
+      <button class="category-pill" onclick="sortRestaurants('rating', this)">⭐ Top Rated</button>
+      <button class="category-pill" onclick="sortRestaurants('fast', this)">⚡ Fastest</button>
+      <button class="category-pill" onclick="sortRestaurants('discount', this)">🏷️ Offers</button>
+    </div>
+
+    <!-- Results count -->
+    <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:20px;" id="resultCount">Showing 6 restaurants</p>
+
+    <!-- Grid -->
+    <div class="restaurants-grid" id="restaurantsGrid"></div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <span class="empty-icon">🔍</span>
+      <h3>No restaurants found</h3>
+      <p>Try a different search or filter</p>
+      <button class="checkout-btn" style="width:auto;display:inline-block;padding:12px 28px;" onclick="resetFilters()">Show All</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div style="max-width:1280px;margin:0 auto;text-align:center;">
+    <p>© 2024 SmartFood – Delivering Happiness</p>
+  </div>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/cart.js"></script>
+<script>
+  let currentList = [...RESTAURANTS];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderList(RESTAURANTS);
+  });
+
+  function renderList(list) {
+    const grid = document.getElementById('restaurantsGrid');
+    const empty = document.getElementById('emptyState');
+    const count = document.getElementById('resultCount');
+    if (list.length === 0) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      renderRestaurants(grid, list);
+      count.textContent = `Showing ${list.length} restaurant${list.length !== 1 ? 's' : ''}`;
+    }
+  }
+
+  function handleSearch(val) {
+    const filtered = RESTAURANTS.filter(r => r.name.toLowerCase().includes(val.toLowerCase()) || r.cuisine.toLowerCase().includes(val.toLowerCase()));
+    renderList(filtered);
+  }
+
+  function sortRestaurants(type, btn) {
+    document.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    let sorted = [...RESTAURANTS];
+    if (type === 'rating') sorted.sort((a, b) => b.rating - a.rating);
+    else if (type === 'fast') sorted.sort((a, b) => parseInt(a.deliveryTime) - parseInt(b.deliveryTime));
+    else if (type === 'discount') sorted = sorted.filter(r => r.discount);
+    renderList(sorted);
+  }
+
+  function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.querySelectorAll('.category-pill').forEach((b, i) => b.classList.toggle('active', i === 0));
+    renderList(RESTAURANTS);
+  }
+</script>
+<script src="js/chatbot.js"></script>
+</body>
+</html>
